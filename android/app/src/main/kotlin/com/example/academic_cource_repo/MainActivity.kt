@@ -1,4 +1,4 @@
-package com.example.cource_cordinating_app
+package com.example.academic_cource_repo
 
 import io.flutter.embedding.android.FlutterActivity
 

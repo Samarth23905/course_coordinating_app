@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  final String baseUrl = 'http://localhost:5000/api';
+  final String baseUrl = 'https://course-coordinating-app.onrender.com';
 
   Future<Map<String, dynamic>> registerUser(
     String name,
@@ -10,7 +10,7 @@ class ApiService {
     String password,
   ) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/register_user'),
+      Uri.parse('$baseUrl/api/register_user'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'name': name,
@@ -24,12 +24,9 @@ class ApiService {
 
   Future<Map<String, dynamic>> login(String username, String password) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/login'),
+      Uri.parse('$baseUrl/api/login'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'username': username,
-        'password': password,
-      }),
+      body: jsonEncode({'username': username, 'password': password}),
     );
 
     return _processResponse(response);
@@ -42,7 +39,7 @@ class ApiService {
     Map<String, dynamic>? semesterDuration,
   }) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/add_course'),
+      Uri.parse('$baseUrl/api/add_course'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'program_code': programCode,
@@ -55,9 +52,12 @@ class ApiService {
     return _processResponse(response);
   }
 
-  Future<Map<String, dynamic>> getCourses(String programCode, int semester) async {
+  Future<Map<String, dynamic>> getCourses(
+    String programCode,
+    int semester,
+  ) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/get_courses/$programCode/$semester'),
+      Uri.parse('$baseUrl/api/get_courses/$programCode/$semester'),
     );
 
     return _processResponse(response);
@@ -70,7 +70,7 @@ class ApiService {
     Map<String, dynamic>? semesterDuration,
   }) async {
     final response = await http.put(
-      Uri.parse('$baseUrl/update_course'),
+      Uri.parse('$baseUrl/api/update_course'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'program_code': programCode,
@@ -83,9 +83,13 @@ class ApiService {
     return _processResponse(response);
   }
 
-  Future<Map<String, dynamic>> deleteCourse(String programCode, int semester, String courseCode) async {
+  Future<Map<String, dynamic>> deleteCourse(
+    String programCode,
+    int semester,
+    String courseCode,
+  ) async {
     final response = await http.delete(
-      Uri.parse('$baseUrl/delete_course'),
+      Uri.parse('$baseUrl/api/delete_course'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'program_code': programCode,
@@ -106,7 +110,9 @@ class ApiService {
       try {
         errorData = jsonDecode(response.body);
       } catch (_) {
-        errorData = {'error': 'Unknown error occurred (${response.statusCode})'};
+        errorData = {
+          'error': 'Unknown error occurred (${response.statusCode})',
+        };
       }
       throw Exception(errorData['error'] ?? 'Request failed');
     }

@@ -7,9 +7,7 @@ import 'screens/view_courses_screen.dart';
 void main() {
   runApp(
     MultiProvider(
-      providers: [
-        Provider<ApiService>(create: (_) => ApiService()),
-      ],
+      providers: [Provider<ApiService>(create: (_) => ApiService())],
       child: const MyApp(),
     ),
   );
@@ -21,7 +19,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Academic Course Repository',
+      debugShowCheckedModeBanner: false,
+      title: 'Acadamic_Cource_Repo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.deepPurple,
@@ -55,36 +54,41 @@ class _MainLayoutState extends State<MainLayout> {
       appBar: AppBar(
         title: const Text('Academic Course Repository'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
-      body: Row(
-        children: [
-          NavigationRail(
-            selectedIndex: _selectedIndex,
-            onDestinationSelected: (int index) {
-              setState(() {
-                _selectedIndex = index;
-              });
-            },
-            labelType: NavigationRailLabelType.all,
-            destinations: const [
-              NavigationRailDestination(
-                icon: Icon(Icons.add_box_outlined),
-                selectedIcon: Icon(Icons.add_box),
-                label: Text('Assign Course'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.view_list_outlined),
-                selectedIcon: Icon(Icons.view_list),
-                label: Text('View Courses'),
-              ),
-            ],
+        centerTitle: true,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(64.0),
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 12.0),
+            child: SegmentedButton<int>(
+              segments: const [
+                ButtonSegment<int>(
+                  value: 0,
+                  label: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text('Assign Course'),
+                  ),
+                  icon: Icon(Icons.add_box),
+                ),
+                ButtonSegment<int>(
+                  value: 1,
+                  label: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text('View Courses'),
+                  ),
+                  icon: Icon(Icons.view_list),
+                ),
+              ],
+              selected: {_selectedIndex},
+              onSelectionChanged: (Set<int> newSelection) {
+                setState(() {
+                  _selectedIndex = newSelection.first;
+                });
+              },
+            ),
           ),
-          const VerticalDivider(thickness: 1, width: 1),
-          Expanded(
-            child: _screens[_selectedIndex],
-          ),
-        ],
+        ),
       ),
+      body: _screens[_selectedIndex],
     );
   }
 }
@@ -140,9 +144,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _openRegistration() async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => const RegistrationScreen()),
-    );
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (context) => const RegistrationScreen()));
     if (!mounted) return;
     setState(() {
       _error = null;
@@ -172,30 +176,44 @@ class _LoginScreenState extends State<LoginScreen> {
                 if (_error != null)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
-                    child: Text(_error!, style: const TextStyle(color: Colors.red), textAlign: TextAlign.center),
+                    child: Text(
+                      _error!,
+                      style: const TextStyle(color: Colors.red),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 TextField(
                   controller: _userCtrl,
-                  decoration: const InputDecoration(labelText: 'Username', border: OutlineInputBorder()),
+                  decoration: const InputDecoration(
+                    labelText: 'Username',
+                    border: OutlineInputBorder(),
+                  ),
                   textInputAction: TextInputAction.next,
                 ),
                 const SizedBox(height: 16),
                 TextField(
                   controller: _passCtrl,
-                  decoration: const InputDecoration(labelText: 'Password', border: OutlineInputBorder()),
+                  decoration: const InputDecoration(
+                    labelText: 'Password',
+                    border: OutlineInputBorder(),
+                  ),
                   obscureText: true,
                   onSubmitted: (_) => _login(),
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: _isLoading ? null : _login,
-                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(16)),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.all(16),
+                  ),
                   child: Text(_isLoading ? 'Logging in...' : 'Login'),
                 ),
                 const SizedBox(height: 12),
                 OutlinedButton(
                   onPressed: _isLoading ? null : _openRegistration,
-                  style: OutlinedButton.styleFrom(padding: const EdgeInsets.all(16)),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.all(16),
+                  ),
                   child: const Text('Create Account'),
                 ),
               ],
@@ -232,7 +250,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       _error = null;
     });
 
-    if (name.isEmpty || username.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+    if (name.isEmpty ||
+        username.isEmpty ||
+        password.isEmpty ||
+        confirmPassword.isEmpty) {
       setState(() {
         _error = 'Please fill in all fields.';
       });
@@ -262,7 +283,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       await apiService.registerUser(name, username, password);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Registration successful. Please log in.')),
+        const SnackBar(
+          content: Text('Registration successful. Please log in.'),
+        ),
       );
       Navigator.of(context).pop();
     } catch (e) {
@@ -310,42 +333,62 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 if (_error != null)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
-                    child: Text(_error!, style: const TextStyle(color: Colors.red), textAlign: TextAlign.center),
+                    child: Text(
+                      _error!,
+                      style: const TextStyle(color: Colors.red),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 TextField(
                   controller: _nameCtrl,
-                  decoration: const InputDecoration(labelText: 'Full Name', border: OutlineInputBorder()),
+                  decoration: const InputDecoration(
+                    labelText: 'Full Name',
+                    border: OutlineInputBorder(),
+                  ),
                   textInputAction: TextInputAction.next,
                 ),
                 const SizedBox(height: 16),
                 TextField(
                   controller: _userCtrl,
-                  decoration: const InputDecoration(labelText: 'Username', border: OutlineInputBorder()),
+                  decoration: const InputDecoration(
+                    labelText: 'Username',
+                    border: OutlineInputBorder(),
+                  ),
                   textInputAction: TextInputAction.next,
                 ),
                 const SizedBox(height: 16),
                 TextField(
                   controller: _passCtrl,
-                  decoration: const InputDecoration(labelText: 'Password', border: OutlineInputBorder()),
+                  decoration: const InputDecoration(
+                    labelText: 'Password',
+                    border: OutlineInputBorder(),
+                  ),
                   obscureText: true,
                   textInputAction: TextInputAction.next,
                 ),
                 const SizedBox(height: 16),
                 TextField(
                   controller: _confirmPassCtrl,
-                  decoration: const InputDecoration(labelText: 'Confirm Password', border: OutlineInputBorder()),
+                  decoration: const InputDecoration(
+                    labelText: 'Confirm Password',
+                    border: OutlineInputBorder(),
+                  ),
                   obscureText: true,
                   onSubmitted: (_) => _register(),
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: _isLoading ? null : _register,
-                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(16)),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.all(16),
+                  ),
                   child: Text(_isLoading ? 'Registering...' : 'Register'),
                 ),
                 const SizedBox(height: 12),
                 TextButton(
-                  onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
+                  onPressed: _isLoading
+                      ? null
+                      : () => Navigator.of(context).pop(),
                   child: const Text('Back to Login'),
                 ),
               ],
