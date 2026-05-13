@@ -89,7 +89,6 @@ def add_course():
     semester = data.get("semester")
     course_data = data.get("course_data")
     semester_duration = data.get("semester_duration")
-    semester_duration = data.get("semester_duration")
 
     if not program_code or not semester or not course_data:
         return jsonify({"error": "Missing program_code, semester, or course_data"}), 400
@@ -162,9 +161,17 @@ def update_course():
     program_code = data.get("program_code")
     semester = data.get("semester")
     course_data = data.get("course_data")
+    semester_duration = data.get("semester_duration")
 
     if not program_code or not semester or not course_data:
         return jsonify({"error": "Missing program_code, semester, or course_data"}), 400
+
+    try:
+        semester = int(semester)
+        if semester < 1 or semester > 8:
+            return jsonify({"error": "Semester must be between 1 and 8"}), 400
+    except (ValueError, TypeError):
+        return jsonify({"error": "Semester must be an integer"}), 400
 
     course_code = course_data.get("course_code")
     if not course_code:
